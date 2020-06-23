@@ -34,7 +34,7 @@ function magnetURIDecode (uri) {
 
     // Address tracker (tr), exact source (xs), and acceptable source (as) are encoded
     // URIs, so decode them
-    if (key === 'tr' || key === 'xs' || key === 'as' || key === 'ws') {
+    if (key === 'tr' || key === 'xs' || key === 'as' || key === 'ws' || key === 'pp' || key === 'vr') {
       val = decodeURIComponent(val)
     }
 
@@ -85,6 +85,9 @@ function magnetURIDecode (uri) {
   if (typeof result.ws === 'string' || Array.isArray(result.ws)) {
     result.urlList = result.urlList.concat(result.ws)
   }
+  result.license = {}
+  if (result.pp) result.license.paymentPointer = result.pp
+  if (result.vr) result.license.verifier = result.vr
 
   // remove duplicates by converting to Set and back
   result.announce = Array.from(new Set(result.announce))
@@ -107,6 +110,8 @@ function magnetURIEncode (obj) {
     obj.ws = obj.urlList
     delete obj.as
   }
+  if (obj.license.paymentPointer) obj.pp = obj.license.paymentPointer
+  if (obj.license.verifier) obj.vr = obj.license.verifier
 
   let result = 'magnet:?'
   Object.keys(obj)
@@ -117,7 +122,7 @@ function magnetURIEncode (obj) {
         if ((i > 0 || j > 0) && (key !== 'kt' || j === 0)) result += '&'
 
         if (key === 'dn') val = encodeURIComponent(val).replace(/%20/g, '+')
-        if (key === 'tr' || key === 'xs' || key === 'as' || key === 'ws') {
+        if (key === 'tr' || key === 'xs' || key === 'as' || key === 'ws' || key === 'pp' || key === 'vr') {
           val = encodeURIComponent(val)
         }
         if (key === 'kt') val = encodeURIComponent(val)
